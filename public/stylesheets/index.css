@@ -1,87 +1,112 @@
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 html {
-  margin: 0;
-  padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-  margin: 0;
-  padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 #main {
-  width: 100%;
-  height: 100%;
-  padding: 10px;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
 }
 
 .main-left {
-  width: 200px;
-  height: 100%;
-  float: left;
-  background-color: #333;
-  color: white;
-  position: relative;
+    width: 250px;
+    height: 100%;
+    float: left;
+    background-color: #333;
+    color: white;
+    position: relative;
 }
 
 .main-right {
-  height: 100%;
-  margin-left: 200px;
-  overflow: hidden;
-  position: relative;
+    height: 100%;
+    margin-left: 200px;
+    overflow: hidden;
+    position: relative;
 }
 
 #canvas {
-  background-color: whitesmoke;
-  cursor: crosshair;
+    background-color: whitesmoke;
+    cursor: crosshair;
 }
 
 .userBox {
-  border-top: 1px solid white;
-  height: 200px;
-  position: absolute;
-  bottom: 200px;
-  overflow: auto;
-  width: 100%;
+    border-top: 1px solid white;
+    height: 100px;
+    position: absolute;
+    bottom: 440px;
+    overflow: auto;
+    width: 100%;
 }
 
 .logBox {
-  border-top: 1px solid white;
-  height: 200px;
-  position: absolute;
-  bottom: 0;
-  overflow: auto;
-  width: 100%;
+    border-top: 1px solid white;
+    height: 400px;
+    position: absolute;
+    bottom: 40px;
+    overflow: auto;
+    width: 100%;
 }
 
 .logBox .logItem {
-  word-break: break-all;
-  font-size: 12px;
+    word-break: break-all;
+    font-size: 12px;
 }
-.logItem:hover{
-  background-color: #2196f3;
+
+.logItem:hover {
+    background-color: #2196f3;
+}
+
+.messageInput {
+    height: 30px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    overflow: auto;
+    padding: 0 5px;
+    display: flex
+}
+
+#id {
+    /* flex:  */
+}
+
+#send {
+    flex: 50px;
+}
+
+#messageBox {
+    width: 100%;
+    height: 40px;
+    background-color: bisque;
 }
 
 .main-left .config div {
-  padding: 0 10px;
-  margin: 5px 0;
+    padding: 0 10px;
+    margin: 5px 0;
 }
 
 .main-left .username {
-  width: 100%;
-  font-size: 18px;
+    width: 100%;
+    font-size: 18px;
 }
 
 .cursor {
-  position: absolute;
-  z-index: 99;
-  cursor: crosshair;
-  user-select: none;
+    position: absolute;
+    z-index: 99;
+    cursor: crosshair;
+    user-select: none;
 }
 
 .cursor i {
-  transform: rotateZ(90deg);
+    transform: rotateZ(90deg);
 }

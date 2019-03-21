@@ -5,10 +5,10 @@ module.exports = function chatroomio(httpServer) {
     /** 所有房间字典，内为当前房间的在线登录用户数组 */
     var onLineUserArr = [];
     var server = socketio(httpServer);
-    server.on("connection", function (client) {
+    server.on("connection", function(client) {
         console.log("socket.io on connection!一个用户进入");
         //监听新用户加入
-        client.on('login', function (data, ack) {
+        client.on('login', function(data, ack) {
             //创建全新的一个服务器端User用户
             var user = createServerUser(data.name, client, getGUID());
             //将uid写入socket对象中
@@ -16,7 +16,7 @@ module.exports = function chatroomio(httpServer) {
             onLineUserArr.push(user);
             //向当前用户所在的房间的所有用户广播有新用户加入
             var serverLoginData = {
-                onLineUserArr: onLineUserArr.map(function (u) { return getClientUserByServerUser(u); }),
+                onLineUserArr: onLineUserArr.map(function(u) { return getClientUserByServerUser(u); }),
                 user: getClientUserByServerUser(getUser(client))
             };
             ack(serverLoginData);
@@ -25,16 +25,16 @@ module.exports = function chatroomio(httpServer) {
             console.log(data.name + ' 加入了多人白板');
         });
         //监听用户链接断开
-        client.on('disconnect', function (data) {
+        client.on('disconnect', function(data) {
             console.log("disconnect");
             var user = getUser(client);
             if (user == null)
                 return;
-            logout(user.socket, function () { });
+            logout(user.socket, function() {});
             client.leaveAll();
         });
         //监听用户退出
-        client.on('logout', function (data, ack) {
+        client.on('logout', function(data, ack) {
             console.log("logout");
             var user = getUser(client);
             if (user == null)
@@ -42,7 +42,7 @@ module.exports = function chatroomio(httpServer) {
             logout(user.socket, ack);
         });
         //监听用户发送的画线数据
-        client.on('drawLine', function (data, ack) {
+        client.on('drawLine', function(data, ack) {
             //向所有客户端广播发布的消息
             var sendData = _.extend({
                 user: getClientUserByServerUser(getUser(client))
@@ -50,7 +50,7 @@ module.exports = function chatroomio(httpServer) {
             ack(sendData);
             client.broadcast.emit('drawLine', sendData);
         });
-        client.on("penMove", function (data) {
+        client.on("penMove", function(data) {
             //向所有客户端广播发布的消息
             var sendData = {
                 user: getClientUserByServerUser(getUser(client))
@@ -58,6 +58,15 @@ module.exports = function chatroomio(httpServer) {
             sendData.user.position.x = data.x;
             sendData.user.position.y = data.y;
             client.broadcast.emit('penMove', sendData);
+        });
+        client.on("message", function(data) {
+            // 向所有用户发送当前用户发送的信息，并对该信息判断
+            let messageData = _.extend({
+                user: getClientUserByServerUser(getUser(client))
+            }, data);
+            client.broadcast.emit('clientMessage', messageData);
+
+            // 对用户的输入进行判断
         });
     });
     /**
@@ -72,11 +81,10 @@ module.exports = function chatroomio(httpServer) {
         if (client.uid === undefined)
             return null;
         uid = client.uid;
-        userArr = onLineUserArr.filter(function (u) { return u.socket === client; });
+        userArr = onLineUserArr.filter(function(u) { return u.socket === client; });
         if (userArr.length > 0) {
             return userArr[0];
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -111,6 +119,7 @@ module.exports = function chatroomio(httpServer) {
         // clientUser.position = { x: 0, y: 0 };
         return clientUser;
     }
+
     function logout(client, ack) {
         var user = getUser(client);
         if (user == null)
@@ -118,7 +127,7 @@ module.exports = function chatroomio(httpServer) {
         onLineUserArr.splice(onLineUserArr.indexOf(user), 1);
         //向所有客户端广播有用户退出
         var logoData = {
-            onLineUserArr: onLineUserArr.map(function (u) { return getClientUserByServerUser(u); }),
+            onLineUserArr: onLineUserArr.map(function(u) { return getClientUserByServerUser(u); }),
             user: getClientUserByServerUser(user)
         };
         ack(logoData);
@@ -132,7 +141,6 @@ module.exports = function chatroomio(httpServer) {
      */
     function getGUID() {
         return new Date().getTime() + "" + Math.floor(Math.random() * 89999 + 10000);
-    }
-    ;
+    };
 };
 //# sourceMappingURL=whiteboard.js.map

@@ -1,60 +1,65 @@
-<% locals.title = "多人共享画板"; locals.js = "index"; locals.css = "index" %>
-<% include component/header %>
+<% locals.title = "你画我猜"; locals.js = "index"; locals.css = "index" %>
+    <% include component/header %>
 
-<div id="main">
-    <div class="main-left">
-        <h2 style="text-align:center;">
-            多人实时画板
-        </h2>
-        <div class="config">
-            <div>
-                用户名: <br>
-                <input class="username" type="text" v-model="userName" @keydown.enter="changeUserName" @blur="changeUserName">
-            </div>
-            <div>
-                画笔宽度:<br>
-                <label for="penWidth1"><input type="radio" name="penWidth" id="penWidth1" value="1" v-model="penWidth">1</label>
-                <label for="penWidth2"><input type="radio" name="penWidth" id="penWidth2" value="4" v-model="penWidth">4</label>
-                <label for="penWidth3"><input type="radio" name="penWidth" id="penWidth3" value="8" v-model="penWidth">8</label>
-                <label for="penWidth4"><input type="radio" name="penWidth" id="penWidth3" value="12" v-model="penWidth">12</label>
-            </div>
-            <div>
-                画笔颜色:<br>
-                <label for="penColor1"><input type="radio" name="penColor" id="penColor1" value="#000000" v-model="penColor">黑</label>
-                <label for="penColor2"><input type="radio" name="penColor" id="penColor2" value="#f44336" v-model="penColor">红</label>
-                <label for="penColor3"><input type="radio" name="penColor" id="penColor3" value="#4caf50" v-model="penColor">绿</label>
-                <label for="penColor4"><input type="radio" name="penColor" id="penColor4" value="#2196f3" v-model="penColor">蓝</label>
-                <br>
-                <label for="penColor5"><input type="radio" name="penColor" id="penColor5" value="#ffc107" v-model="penColor">黄</label>
-                <label for="penColor6"><input type="radio" name="penColor" id="penColor6" value="#9c27b0" v-model="penColor">紫</label>
-                <label for="penColor7"><input type="radio" name="penColor" id="penColor7" value="#ffc0cb" v-model="penColor">粉</label>
-                <label for="penColor8"><input type="radio" name="penColor" id="penColor8" value="#f5f5f5" v-model="penColor">白</label>
-            </div>
-        </div>
+        <div id="main">
+            <div class="main-left">
+                <h2 style="text-align:center;">
+                    你画我猜
+                </h2>
+                <div class="config">
+                    <div>
+                        用户名: <br>
+                        <input class="username" type="text" v-model="userName" @keydown.enter="changeUserName" @blur="changeUserName">
+                    </div>
+                    <div>
+                        画笔宽度:<br>
+                        <label for="penWidth1"><input type="radio" name="penWidth" id="penWidth1" value="1" v-model="penWidth">1</label>
+                        <label for="penWidth2"><input type="radio" name="penWidth" id="penWidth2" value="4" v-model="penWidth">4</label>
+                        <label for="penWidth3"><input type="radio" name="penWidth" id="penWidth3" value="8" v-model="penWidth">8</label>
+                        <label for="penWidth4"><input type="radio" name="penWidth" id="penWidth3" value="12" v-model="penWidth">12</label>
+                    </div>
+                    <div>
+                        画笔颜色:<br>
+                        <label for="penColor1"><input type="radio" name="penColor" id="penColor1" value="#000000" v-model="penColor">黑</label>
+                        <label for="penColor2"><input type="radio" name="penColor" id="penColor2" value="#f44336" v-model="penColor">红</label>
+                        <label for="penColor3"><input type="radio" name="penColor" id="penColor3" value="#4caf50" v-model="penColor">绿</label>
+                        <label for="penColor4"><input type="radio" name="penColor" id="penColor4" value="#2196f3" v-model="penColor">蓝</label>
+                        <br>
+                        <label for="penColor5"><input type="radio" name="penColor" id="penColor5" value="#ffc107" v-model="penColor">黄</label>
+                        <label for="penColor6"><input type="radio" name="penColor" id="penColor6" value="#9c27b0" v-model="penColor">紫</label>
+                        <label for="penColor7"><input type="radio" name="penColor" id="penColor7" value="#ffc0cb" v-model="penColor">粉</label>
+                        <label for="penColor8"><input type="radio" name="penColor" id="penColor8" value="#f5f5f5" v-model="penColor">白</label>
+                    </div>
+                </div>
 
-        <div class="userBox">
-            <div>【在线用户列表】 共<span v-text="onLineUserArr.length"></span>人</div>
-            <div class="logItem" v-for="user of onLineUserArr" track-by="$index" v-text="user.name"></div>
-        </div>
-        <div class="logBox">
-            <div>【日志】</div>
-            <div class="logItem" v-for="log of logArr" track-by="$index" v-text="log"></div>
-        </div>
-    </div>
-    <div class="main-right">
-        <canvas id="canvas"> 
-            您的浏览器不支持canvas
-        </canvas>
+                <div class="userBox">
+                    <div>【在线用户列表】 共<span v-text="onLineUserArr.length"></span>人</div>
+                    <div class="logItem" v-for="user of onLineUserArr" track-by="$index" v-text="user.name"></div>
+                </div>
+                <div class="logBox">
+                    <div>【房间】</div>
+                    <div class="logItem" v-for="log of logArr" track-by="$index" v-text="log"></div>
+                </div>
+                <div class="messageInput">
+                    <input id="words" type="text" name="words" v-model="message">
+                    <input id="send" type="submit" value="发送" @click="submitMessage">
+                </div>
+            </div>
+            <div class="main-right">
+                <div id="messageBox">
+                    用户45262 猜对了答案
+                </div>
+                <canvas id="canvas"> 
+                    您的浏览器不支持canvas
+                </canvas>
 
-        <div class="cursorBox">
-            <div class="cursor" v-for="user of onLineUserArr" track-by="$index" 
-                :style={left:user.position.x,top:user.position.y}
-                v-show="user.name!=userName">
-                <i class="fa fa-pencil"></i>
-                <span v-text="user.name"></span>
+                <div class="cursorBox">
+                    <div class="cursor" v-for="user of onLineUserArr" track-by="$index" :style={left:user.position.x,top:user.position.y} v-show="user.name!=userName">
+                        <i class="fa fa-pencil"></i>
+                        <span v-text="user.name"></span>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
-<script src="/javascripts/draw.js"></script>
-<% include component/footer %>
+        <script src="/javascripts/draw.js"></script>
+        <% include component/footer %>
