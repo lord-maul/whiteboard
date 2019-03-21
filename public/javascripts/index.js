@@ -25,7 +25,7 @@ var vmData = {
 };
 var vmMethod = {
     /** 修改用户名 */
-    changeUserName: function() {
+    changeUserName: function () {
         if (vm.userName == vm.loginUserName)
             return;
         if (vm.userName.trim().length == 0) {
@@ -37,28 +37,29 @@ var vmMethod = {
         clinetLogin();
     },
     /** 清空画布 */
-    clearCanvas: function() {
+    clearCanvas: function () {
         let c = document.getElementById("canvas");
         let cxt = c.getContext("2d");
         c.height = c.height;
     },
     /** 发送消息 */
-    submitMessage: function() {
+    submitMessage: function () {
         if (vm.message.trim().length === 0) {
             alert("发送消息不能为空");
             return
         }
 
+        clientMessage();
         log(vm.userName + ": " + vm.message);
         vm.message = '';
     }
 };
 var vmComputed = {};
 var vmWatch = {
-    penWidth: function(v) {
+    penWidth: function (v) {
         draw.penWidth = vm.penWidth;
     },
-    penColor: function(v) {
+    penColor: function (v) {
         draw.penColor = vm.penColor;
     }
 };
@@ -68,22 +69,23 @@ vm = new Vue({
     methods: vmMethod,
     watch: vmWatch,
     computed: vmComputed,
-    mounted: function() {},
-    created: function() {
+    mounted: function () { },
+    created: function () {
         console.log("created");
     },
-    beforeMount: function() {
+    beforeMount: function () {
         console.log("beforeMount");
     }
 });
+
 clinetLogin();
-draw.onDrawLine = function(startPoint, endPoint) {
+draw.onDrawLine = function (startPoint, endPoint) {
     server.emit("drawLine", {
         startPoint: startPoint,
         endPoint: endPoint,
         color: draw.penColor,
         width: draw.penWidth
-    }, function() {});
+    }, function () { });
 };
 
 draw.onMouseMove = debounce(drawOnMouseMove, 100, 100);
@@ -96,7 +98,7 @@ function clinetLogin() {
     server = io(socketServerUrl, {});
     server.emit("login", {
         name: vm.userName
-    }, function(data) {
+    }, function (data) {
         log("当前用户登录成功");
         // vm.currentUser = data.user;
         vm.onLineUserArr = data.onLineUserArr;
@@ -116,6 +118,23 @@ function clientMessage() {
         s: vm.message
     });
 }
+
+/**
+ * 当用户收到服务器发来的字符消息
+ * @param {id: str, s:str} d 
+ */
+function onReceiveMessage(d) {
+    // console.log("onReceiveMessage", d);
+    if (d.user.name === "") {
+        console.log("id为空");
+        return;
+    } else if (d.s === "") {
+        console.log("接受到的输入字符串为空");
+        return;
+    } else {
+        log(d.user.name + ": " + d.s);
+    }
+}
 /**
  * 当画笔在canvas上移动时发送给服务器
  *
@@ -134,14 +153,14 @@ function drawOnMouseMove(e) {
  */
 function onServerPenMove(d) {
     // console.log("onServerPenMove", d);
-    var user = vm.onLineUserArr.filter(function(u) { return u.uid == d.user.uid; })[0];
+    var user = vm.onLineUserArr.filter(function (u) { return u.uid == d.user.uid; })[0];
     if (user == undefined)
         return;
     user.position = d.user.position;
 }
 
 function clientLogout() {
-    server.emit("logout", {}, function() {});
+    server.emit("logout", {}, function () { });
 }
 /**
  * 接受到其他用户登录操作
@@ -170,7 +189,7 @@ function onServerLogout(d) {
  */
 function onServerDrawLine(d) {
     console.log("onServerDrawLine", d);
-    var user = vm.onLineUserArr.filter(function(u) { return u.uid == d.user.uid; })[0];
+    var user = vm.onLineUserArr.filter(function (u) { return u.uid == d.user.uid; })[0];
     if (user != undefined) {
         user.position = d.endPoint;
     }
@@ -180,15 +199,6 @@ function onServerDrawLine(d) {
 function log(str) {
     vm.logArr.unshift(str);
     console.log(str);
-}
-
-/**
- * 接受到服务器发来的其他用户发送的消息
- * @param {str} s 
- */
-function onReceiveMessage(s) {
-    console.log("onReceiveMessage ", s);
-    log(s);
 }
 
 /**
@@ -202,7 +212,7 @@ function onReceiveMessage(s) {
 function debounce(fn, delay, mustRunDelay) {
     var timer = null;
     var t_start;
-    return function() {
+    return function () {
         var context = this,
             args = arguments,
             t_curr = +new Date();
@@ -214,7 +224,7 @@ function debounce(fn, delay, mustRunDelay) {
             fn.apply(context, args);
             t_start = t_curr;
         } else {
-            timer = setTimeout(function() {
+            timer = setTimeout(function () {
                 fn.apply(context, args);
             }, delay);
         }

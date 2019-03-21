@@ -64,9 +64,13 @@ module.exports = function chatroomio(httpServer) {
             let messageData = _.extend({
                 user: getClientUserByServerUser(getUser(client))
             }, data);
-            client.broadcast.emit('clientMessage', messageData);
+            console.log(data);
+            // console
+            client.broadcast.emit('message', messageData);
 
             // 对用户的输入进行判断
+
+            
         });
     });
     /**
