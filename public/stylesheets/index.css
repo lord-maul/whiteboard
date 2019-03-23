@@ -80,6 +80,11 @@ body {
     /* flex:  */
 }
 
+
+/* #ready: {
+    background-color: #a0a0a0;
+} */
+
 #send {
     flex: 50px;
 }

@@ -30,6 +30,10 @@
                         <label for="penColor7"><input type="radio" name="penColor" id="penColor7" value="#ffc0cb" v-model="penColor">粉</label>
                         <label for="penColor8"><input type="radio" name="penColor" id="penColor8" value="#f5f5f5" v-model="penColor">白</label>
                     </div>
+                    <div class="controlBox">
+                        <input type="submit" id="ready" value="准备" @click="onReady">
+                        <input type="submit" value="清空画布" @click="clearCanvas">
+                    </div>
                 </div>
 
                 <div class="userBox">

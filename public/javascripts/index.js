@@ -25,7 +25,7 @@ var vmData = {
 };
 var vmMethod = {
     /** 修改用户名 */
-    changeUserName: function () {
+    changeUserName: function() {
         if (vm.userName == vm.loginUserName)
             return;
         if (vm.userName.trim().length == 0) {
@@ -36,14 +36,15 @@ var vmMethod = {
         clientLogout();
         clinetLogin();
     },
+
     /** 清空画布 */
-    clearCanvas: function () {
-        let c = document.getElementById("canvas");
-        let cxt = c.getContext("2d");
-        c.height = c.height;
+    clearCanvas: function() {
+        clearMyCanvas();
+        clearClientCanvas();
     },
+
     /** 发送消息 */
-    submitMessage: function () {
+    submitMessage: function() {
         if (vm.message.trim().length === 0) {
             alert("发送消息不能为空");
             return
@@ -52,14 +53,22 @@ var vmMethod = {
         clientMessage();
         log(vm.userName + ": " + vm.message);
         vm.message = '';
+    },
+
+    /** 本地用户已准备 */
+    onReady: function() {
+        document.getElementById("ready").style.background = "#a0a0a0";
+        console.log("ready");
+        log("已准备！");
+        onLocalReady();
     }
 };
 var vmComputed = {};
 var vmWatch = {
-    penWidth: function (v) {
+    penWidth: function(v) {
         draw.penWidth = vm.penWidth;
     },
-    penColor: function (v) {
+    penColor: function(v) {
         draw.penColor = vm.penColor;
     }
 };
@@ -69,23 +78,23 @@ vm = new Vue({
     methods: vmMethod,
     watch: vmWatch,
     computed: vmComputed,
-    mounted: function () { },
-    created: function () {
+    mounted: function() {},
+    created: function() {
         console.log("created");
     },
-    beforeMount: function () {
+    beforeMount: function() {
         console.log("beforeMount");
     }
 });
 
 clinetLogin();
-draw.onDrawLine = function (startPoint, endPoint) {
+draw.onDrawLine = function(startPoint, endPoint) {
     server.emit("drawLine", {
         startPoint: startPoint,
         endPoint: endPoint,
         color: draw.penColor,
         width: draw.penWidth
-    }, function () { });
+    }, function() {});
 };
 
 draw.onMouseMove = debounce(drawOnMouseMove, 100, 100);
@@ -98,7 +107,7 @@ function clinetLogin() {
     server = io(socketServerUrl, {});
     server.emit("login", {
         name: vm.userName
-    }, function (data) {
+    }, function(data) {
         log("当前用户登录成功");
         // vm.currentUser = data.user;
         vm.onLineUserArr = data.onLineUserArr;
@@ -110,12 +119,26 @@ function clinetLogin() {
     server.on("drawLine", onServerDrawLine);
     server.on("penMove", onServerPenMove);
     server.on("message", onReceiveMessage);
+    server.on("clearCanvas", clearMyCanvas);
+    server.on("clientReady", function(data) {
+        let name = data.userName;
+        log("用户 " + name + " 已准备");
+    });
 }
 
 function clientMessage() {
     server.emit("message", {
         id: vm.uid,
         s: vm.message
+    });
+}
+
+/**
+ * 向服务器发送本地已准备的消息
+ */
+function onLocalReady() {
+    server.emit("ready", {
+        userId: vm.uid
     });
 }
 
@@ -135,6 +158,23 @@ function onReceiveMessage(d) {
         log(d.user.name + ": " + d.s);
     }
 }
+
+/**
+ * 清空本地画布
+ */
+function clearMyCanvas() {
+    let c = document.getElementById("canvas");
+    let cxt = c.getContext("2d");
+    c.height = c.height;
+}
+
+/**
+ * 清空所有客户端画布
+ */
+function clearClientCanvas() {
+    server.emit("clearCanvas", {});
+}
+
 /**
  * 当画笔在canvas上移动时发送给服务器
  *
@@ -153,14 +193,14 @@ function drawOnMouseMove(e) {
  */
 function onServerPenMove(d) {
     // console.log("onServerPenMove", d);
-    var user = vm.onLineUserArr.filter(function (u) { return u.uid == d.user.uid; })[0];
+    var user = vm.onLineUserArr.filter(function(u) { return u.uid == d.user.uid; })[0];
     if (user == undefined)
         return;
     user.position = d.user.position;
 }
 
 function clientLogout() {
-    server.emit("logout", {}, function () { });
+    server.emit("logout", {}, function() {});
 }
 /**
  * 接受到其他用户登录操作
@@ -189,7 +229,7 @@ function onServerLogout(d) {
  */
 function onServerDrawLine(d) {
     console.log("onServerDrawLine", d);
-    var user = vm.onLineUserArr.filter(function (u) { return u.uid == d.user.uid; })[0];
+    var user = vm.onLineUserArr.filter(function(u) { return u.uid == d.user.uid; })[0];
     if (user != undefined) {
         user.position = d.endPoint;
     }
@@ -212,7 +252,7 @@ function log(str) {
 function debounce(fn, delay, mustRunDelay) {
     var timer = null;
     var t_start;
-    return function () {
+    return function() {
         var context = this,
             args = arguments,
             t_curr = +new Date();
@@ -224,7 +264,7 @@ function debounce(fn, delay, mustRunDelay) {
             fn.apply(context, args);
             t_start = t_curr;
         } else {
-            timer = setTimeout(function () {
+            timer = setTimeout(function() {
                 fn.apply(context, args);
             }, delay);
         }

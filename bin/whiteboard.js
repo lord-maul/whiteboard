@@ -4,6 +4,7 @@ var _ = require("underscore");
 module.exports = function chatroomio(httpServer) {
     /** 所有房间字典，内为当前房间的在线登录用户数组 */
     var onLineUserArr = [];
+    var userIsReady = [];
     var server = socketio(httpServer);
     server.on("connection", function(client) {
         console.log("socket.io on connection!一个用户进入");
@@ -14,6 +15,7 @@ module.exports = function chatroomio(httpServer) {
             //将uid写入socket对象中
             client.uid = user.uid;
             onLineUserArr.push(user);
+            userIsReady.push(false);
             //向当前用户所在的房间的所有用户广播有新用户加入
             var serverLoginData = {
                 onLineUserArr: onLineUserArr.map(function(u) { return getClientUserByServerUser(u); }),
@@ -70,7 +72,25 @@ module.exports = function chatroomio(httpServer) {
 
             // 对用户的输入进行判断
 
-            
+
+        });
+        client.on("clearCanvas", function(data) {
+            console.log("clearCanvas");
+            client.broadcast.emit("clearCanvas", data);
+        });
+        client.on("ready", function(data) {
+            let user = getClientUserByServerUser(getUser(client));
+            let name = user.name;
+
+            let index = _.indexOf(onLineUserArr, name);
+            userIsReady[index] = true;
+
+            let sendData = {
+                userName: name
+            };
+
+            console.log(sendData);
+            client.broadcast.emit("clientReady", sendData);
         });
     });
     /**
