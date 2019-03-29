@@ -82,7 +82,9 @@ module.exports = function chatroomio(httpServer) {
             let user = getClientUserByServerUser(getUser(client));
             let name = user.name;
 
-            let index = _.indexOf(onLineUserArr, name);
+            let index = _.indexOf(onLineUserArr, getUser(client));
+            console.log("onlineuserArr: " + onLineUserArr);
+            console.log("name: " + name);
             userIsReady[index] = true;
 
             let sendData = {
@@ -91,6 +93,12 @@ module.exports = function chatroomio(httpServer) {
 
             console.log(sendData);
             client.broadcast.emit("clientReady", sendData);
+
+            console.log(userIsReady);
+            if (_.every(userIsReady)) {
+                console.log("game begin at server end");
+                client.broadcast.emit('gameBegin');
+            }
         });
     });
     /**

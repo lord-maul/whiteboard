@@ -88,16 +88,16 @@ vm = new Vue({
 });
 
 clinetLogin();
-draw.onDrawLine = function(startPoint, endPoint) {
-    server.emit("drawLine", {
-        startPoint: startPoint,
-        endPoint: endPoint,
-        color: draw.penColor,
-        width: draw.penWidth
-    }, function() {});
-};
+// draw.onDrawLine = function(startPoint, endPoint) {
+//     server.emit("drawLine", {
+//         startPoint: startPoint,
+//         endPoint: endPoint,
+//         color: draw.penColor,
+//         width: draw.penWidth
+//     }, function() {});
+// };
 
-draw.onMouseMove = debounce(drawOnMouseMove, 100, 100);
+// draw.onMouseMove = debounce(drawOnMouseMove, 100, 100);
 /**
  * 浏览器端发起用户登录
  *
@@ -116,14 +116,15 @@ function clinetLogin() {
     });
     server.on("login", onServerLogin);
     server.on("logout", onServerLogout);
-    server.on("drawLine", onServerDrawLine);
-    server.on("penMove", onServerPenMove);
+    // server.on("drawLine", onServerDrawLine);
+    // server.on("penMove", onServerPenMove);
     server.on("message", onReceiveMessage);
     server.on("clearCanvas", clearMyCanvas);
     server.on("clientReady", function(data) {
         let name = data.userName;
         log("用户 " + name + " 已准备");
     });
+    server.on("gameBegin", onGameBegin);
 }
 
 function clientMessage() {
@@ -140,6 +141,29 @@ function onLocalReady() {
     server.emit("ready", {
         userId: vm.uid
     });
+}
+
+/**
+ * 所有玩家均已准备，游戏开始
+ * @param {*} d 
+ */
+function onGameBegin() {
+    draw.onDrawLine = function(startPoint, endPoint) {
+        server.emit("drawLine", {
+            startPoint: startPoint,
+            endPoint: endPoint,
+            color: draw.penColor,
+            width: draw.penWidth
+        }, function() {});
+    };
+
+    draw.onMouseMove = debounce(drawOnMouseMove, 100, 100);
+
+    console.log("Game begins at client end.");
+    server.on("drawLine", onServerDrawLine);
+    server.on("penMove", onServerPenMove);
+    console.log(draw.bind);
+    draw.bind();
 }
 
 /**

@@ -1,5 +1,5 @@
 var draw;
-(function (draw) {
+(function(draw) {
     //-------配置对象------
     /** 画笔颜色 */
     draw.penColor = "#000000";
@@ -19,19 +19,14 @@ var draw;
     /** 是否鼠标按下 */
     var isMouseDown = false;
     //----可由外部注册的事件----
-    draw.onMouseDown = function (e) { };
-    draw.onMouseMove = function (e) { };
-    draw.onMouseUp = function (e) { };
-    draw.onDrawCurveStart = function (startPoint) { };
-    draw.onDrawCurveEnd = function (endPoint) { };
-    draw.onDrawLine = function (startPoint, endPoint) { };
-    init();
-    function init() {
-        bind();
-        resetCanvasSize();
-    }
-    // canvas.addEventListener("mouseout", mouseout, false);
-    function bind() {
+    draw.onMouseDown = function(e) {};
+    draw.onMouseMove = function(e) {};
+    draw.onMouseUp = function(e) {};
+    draw.onDrawCurveStart = function(startPoint) {};
+    draw.onDrawCurveEnd = function(endPoint) {};
+    draw.onDrawLine = function(startPoint, endPoint) {};
+    draw.bind = function() {
+        console.log("Game Already Begin! Start binding...");
         //canvas鼠标事件
         canvas.addEventListener("mousedown", mousedown, false);
         canvas.addEventListener("mousemove", mousemove, false);
@@ -39,7 +34,40 @@ var draw;
         // canvas.addEventListener("mouseleave", mouseleave, false);
         // 监听浏览器窗口宽高变更
         window.onresize = resetCanvasSize;
+    };
+    draw.unBind = function() {
+        canvas.removeEventListener("mousedown");
+        canvas.removeEventListener("mousemove");
+        canvas.removeEventListener("mouseup");
+    };
+    init();
+
+    function init() {
+        // bind();
+        window.onresize = resetCanvasSize;
+        resetCanvasSize();
     }
+    // canvas.addEventListener("mouseout", mouseout, false);
+    // function bind() {
+    //     //canvas鼠标事件
+    //     canvas.addEventListener("mousedown", mousedown, false);
+    //     canvas.addEventListener("mousemove", mousemove, false);
+    //     canvas.addEventListener("mouseup", mouseup, false);
+    //     // canvas.addEventListener("mouseleave", mouseleave, false);
+    //     // 监听浏览器窗口宽高变更
+    //     window.onresize = resetCanvasSize;
+    // }
+
+    /**
+     * 解绑事件监听
+     */
+    // function unBind() {
+    //     canvas.removeEventListener("mousedown");
+    //     canvas.removeEventListener("mousemove");
+    //     canvas.removeEventListener("mouseup");
+    // }
+
+
     /**
      * 创建一个Point点
      *
@@ -93,13 +121,15 @@ var draw;
             lastPoint.y = currPoint.y;
         }
     }
-    function dratPoint(pt) {
+
+    function drawPoint(pt) {
         context.beginPath();
         context.fillStyle = draw.penColor;
         context.arc(pt.x, pt.y, draw.penWidth / 2, 0, 2 * Math.PI);
         context.fill();
         context.closePath();
     }
+
     function mousemove(e) {
         draw.onMouseMove(e);
         // debounce(drawOnMouseMove, 100, 300);
@@ -107,6 +137,7 @@ var draw;
         currPoint.y = e.offsetY;
         drawLine();
     }
+
     function mousedown(e) {
         draw.onMouseDown(e);
         isMouseDown = true;
@@ -114,10 +145,12 @@ var draw;
         currPoint.y = lastPoint.y = e.offsetY;
         drawCurveStart(new Point(e.offsetX, e.offsetY));
     }
+
     function mouseup(e) {
         draw.onMouseUp(e);
         drawCurveEnd(new Point(e.offsetX, e.offsetY));
     }
+
     function mouseleave(e) {
         // console.log(e);
         // var leaveElement: Element = <any>(e.relatedTarget || e.toElement);
@@ -127,6 +160,7 @@ var draw;
         // };
         drawCurveEnd(new Point(e.offsetX, e.offsetY));
     }
+
     function mouseout(e) {
         drawCurveEnd(new Point(e.offsetX, e.offsetY));
     }
@@ -157,8 +191,10 @@ var draw;
     function debounce(fn, delay, mustRunDelay) {
         var timer = null;
         var t_start;
-        return function () {
-            var context = this, args = arguments, t_curr = +new Date();
+        return function() {
+            var context = this,
+                args = arguments,
+                t_curr = +new Date();
             clearTimeout(timer);
             if (!t_start) {
                 t_start = t_curr;
@@ -166,15 +202,13 @@ var draw;
             if (t_curr - t_start >= mustRunDelay) {
                 fn.apply(context, args);
                 t_start = t_curr;
-            }
-            else {
-                timer = setTimeout(function () {
+            } else {
+                timer = setTimeout(function() {
                     fn.apply(context, args);
                 }, delay);
             }
         };
-    }
-    ;
+    };
     //-----------------外部调用方法-----------------
     /**
      * 绘制一条从服务器发来线段
@@ -200,7 +234,7 @@ var draw;
      *
      * @interface Point
      */
-    var Point = (function () {
+    var Point = (function() {
         function Point(x, y) {
             if (x === void 0) { x = 0; }
             if (y === void 0) { y = 0; }

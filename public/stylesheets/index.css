@@ -43,14 +43,14 @@ body {
     border-top: 1px solid white;
     height: 100px;
     position: absolute;
-    bottom: 440px;
+    bottom: 420px;
     overflow: auto;
     width: 100%;
 }
 
 .logBox {
     border-top: 1px solid white;
-    height: 400px;
+    height: 280px;
     position: absolute;
     bottom: 40px;
     overflow: auto;
