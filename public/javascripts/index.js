@@ -58,6 +58,7 @@ var vmMethod = {
     /** 本地用户已准备 */
     onReady: function() {
         document.getElementById("ready").style.background = "#a0a0a0";
+        document.getElementById("ready").disabled = true;
         console.log("ready");
         log("已准备！");
         onLocalReady();
@@ -116,8 +117,8 @@ function clinetLogin() {
     });
     server.on("login", onServerLogin);
     server.on("logout", onServerLogout);
-    // server.on("drawLine", onServerDrawLine);
-    // server.on("penMove", onServerPenMove);
+    server.on("drawLine", onServerDrawLine);
+    server.on("penMove", onServerPenMove);
     server.on("message", onReceiveMessage);
     server.on("clearCanvas", clearMyCanvas);
     server.on("clientReady", function(data) {
@@ -140,7 +141,7 @@ function clientMessage() {
 function onLocalReady() {
     server.emit("ready", {
         userId: vm.uid
-    });
+    }, onGameBegin);
 }
 
 /**
@@ -160,8 +161,6 @@ function onGameBegin() {
     draw.onMouseMove = debounce(drawOnMouseMove, 100, 100);
 
     console.log("Game begins at client end.");
-    server.on("drawLine", onServerDrawLine);
-    server.on("penMove", onServerPenMove);
     console.log(draw.bind);
     draw.bind();
 }
