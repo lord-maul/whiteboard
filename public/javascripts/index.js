@@ -234,6 +234,7 @@ function onServerLogin(d) {
     console.log("onServerLogin", d);
     vm.onLineUserArr = d.onLineUserArr;
     log("新用户<" + d.user.name + ">登录");
+    vm.clearCanvas();
 }
 /**
  * 接收到其他用户退出操作

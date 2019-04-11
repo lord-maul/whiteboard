@@ -115,3 +115,8 @@ body {
 .cursor i {
     transform: rotateZ(90deg);
 }
+
+#ready {
+    border: 0;
+    height: 24px;
+}
